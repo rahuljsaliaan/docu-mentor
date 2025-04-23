@@ -5,7 +5,7 @@ import subprocess
 from docu_mentor.ui.helpers.session import init_session_state
 from docu_mentor.ui.setup import setup_url_input
 from docu_mentor.ui.chat import chat_interface
-from docu_mentor.types.enums import SessionStateEnum, ComponentsKey
+from docu_mentor.types.enums import SessionStateEnum, ComponentsKeyEnum
 
 
 def main():
@@ -15,7 +15,7 @@ def main():
         return
 
     if SessionStateEnum.documentation_url in st.session_state:
-        pass
+        chat_interface()
     else:
         # Initialize session state
         init_session_state()
@@ -23,7 +23,6 @@ def main():
         # Show setup URL input
         setup_url_input()
 
-    chat_interface()
     # Show chat interface
 
 

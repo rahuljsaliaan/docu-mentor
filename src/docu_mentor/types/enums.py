@@ -39,8 +39,9 @@ class SessionStateEnum(str, Enum):
     chat_answer_history = "chat_answer_history"
     chat_history = "chat_history"
     faiss_index = "faiss_index"
+    generating_response = "generating_response"
 
 
-class ComponentsKey(str, Enum):
+class ComponentsKeyEnum(str, Enum):
     url_input = "url_input"
     chat_prompt = "chat_prompt"

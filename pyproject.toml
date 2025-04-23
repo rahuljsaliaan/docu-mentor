@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "DocuMentor is a smart documentation assistant that helps you quickly query and retrieve relevant information from your documentation. With AI-driven search capabilities, it allows developers and teams to easily access up-to-date and precise details, saving time and effort in navigating complex documents."
 authors = [{ name = "rahuljsaliaan", email = "rahuljsaliaan@gmail.com" }]
 readme = "README.md"
-requires-python = ">=3.13 <3.14"
+requires-python = ">=3.12 <3.14"
 dependencies = [
     "langchain (>=0.3.23,<0.4.0)",
     "langchain-openai (>=0.3.14,<0.4.0)",
