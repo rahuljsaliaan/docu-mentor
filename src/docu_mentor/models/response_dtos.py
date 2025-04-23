@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Set
 from pydantic import BaseModel, ConfigDict, Field
 from langchain_core.documents import Document
 
@@ -17,3 +17,21 @@ class DocsRetrievalResponseDTO(BaseModel):
         alias="context",
         description="The list of source documents of the final answer.",
     )
+
+    @classmethod
+    def create_sources_string(cls, source_urls: Set[str]):
+        if not source_urls:
+            return ""
+
+        source_string = "sources:\n"
+
+        for i, source in enumerate(source_urls):
+            source_string += f"{i + 1}: {source}\n"
+
+        return source_string
+
+    @property
+    def formatted_response(self) -> str:
+        sources = set(doc.metadata["source"] for doc in self.source_documents)
+        sources_string = self.create_sources_string(sources)
+        return f"{self.result} \n\n {sources_string}"

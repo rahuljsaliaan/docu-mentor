@@ -13,7 +13,7 @@ embeddings = OpenAIEmbeddings(
 )
 
 
-def run_llm() -> DocsRetrievalResponseDTO:
+def run_llm(query: str) -> DocsRetrievalResponseDTO:
     docsearch_vector_store = PineconeVectorStore(
         pinecone_api_key=settings.api.pinecone_api_key,
         embedding=embeddings,
@@ -35,7 +35,7 @@ def run_llm() -> DocsRetrievalResponseDTO:
         combine_docs_chain=stuff_documents_chain,
     )
 
-    result = retrieval_chain.invoke(input={"input": "What is a Langchain chain?"})
+    result = retrieval_chain.invoke(input={"input": query})
 
     return DocsRetrievalResponseDTO(**result)
 
