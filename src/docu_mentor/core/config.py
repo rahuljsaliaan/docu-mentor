@@ -5,9 +5,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from docu_mentor.types.enums import EnvironmentEnum, OpenAIModelEnum
 from docu_mentor.types.types import EmbeddingSettingsDict
 
+# Settings Configurations
+model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+)
 
 class APIKeySettings(BaseSettings):
     """Holds API keys for external services."""
+    model_config = model_config
 
     openai_api_key: str = Field(..., description="API key of Open AI.")
     pinecone_api_key: str = Field(..., description="API key of Pinecone DB.")
@@ -19,6 +24,7 @@ class APIKeySettings(BaseSettings):
 
 class URLSettings(BaseSettings):
     """Contains URLs and file paths used in the project."""
+    model_config = model_config
 
     langchain_docs_path: str = Field(
         default="", description="Relative file path of the langchain documentation."
@@ -29,6 +35,7 @@ class URLSettings(BaseSettings):
 
 class ProjectConfig(BaseSettings):
     """Project-specific environment and configuration values."""
+    model_config = model_config
 
     environment: EnvironmentEnum = Field(
         default=EnvironmentEnum.production,
@@ -60,6 +67,7 @@ class ProjectConfig(BaseSettings):
 
 class EmbeddingSettings(BaseSettings):
     """Configuration for document chunking and batch processing by model."""
+    model_config = model_config
 
     settings_config: Dict[OpenAIModelEnum, EmbeddingSettingsDict] = Field(
         default_factory=lambda: {
@@ -89,10 +97,7 @@ class EmbeddingSettings(BaseSettings):
 class Settings(BaseSettings):
     """Root settings object combining all configuration sections."""
 
-    # Settings Configurations
-    model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
-    )
+    model_config = model_config
 
     api: APIKeySettings = APIKeySettings()
     url: URLSettings = URLSettings()

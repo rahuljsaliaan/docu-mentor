@@ -31,7 +31,7 @@ packages = [{ include = "docu_mentor", from = "src" }]
 
 [tool.poetry.scripts]
 start = "bin.runner:run"
-ui = "src.docu_mentor.ui:main"
+ui = "src.docu_mentor.main:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
