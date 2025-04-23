@@ -66,14 +66,14 @@ class EmbeddingSettings(BaseSettings):
             OpenAIModelEnum.TEXT_EMBEDDING_3_SMALL: {
                 "chunk_size": 500,
                 "chunk_overlap": 50,
-                "batch_size": 350,
+                "batch_size": 100,
                 "dimensions": 1536,
                 "metric": "cosine",
             },
             OpenAIModelEnum.TEXT_EMBEDDING_ADA_002: {
                 "chunk_size": 800,
                 "chunk_overlap": 100,
-                "batch_size": 150,
+                "batch_size": 50,
                 "dimensions": 1536,
                 "metric": "cosine",
             },

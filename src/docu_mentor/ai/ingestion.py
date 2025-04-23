@@ -1,5 +1,6 @@
 from pinecone import Pinecone
 from typing import List, Callable, Dict, Iterator, Any
+from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import ReadTheDocsLoader
@@ -92,18 +93,46 @@ def ingest_local_docs():
     )
 
 
+def ingest_docs_faiss(
+    raw_documents: List[Document],
+    faiss_index_path: str = None,
+    documents_manipulator: Callable[[List[Document]], List[Document]] = None,
+) -> None:
+    print(f"Loaded {len(raw_documents)} documents")
+
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=embeddings_config["chunk_size"],
+        chunk_overlap=embeddings_config["chunk_overlap"],
+    )
+
+    documents = text_splitter.split_documents(documents=raw_documents)
+
+    if documents_manipulator:
+        documents = documents_manipulator(documents)
+
+    print(f"Going to add {len(documents)} documents to FAISS")
+
+    vectorstore = FAISS.from_documents(documents, embeddings)
+
+    if faiss_index_path:
+        vectorstore.save_local(faiss_index_path)
+
+    print(
+        f"Stored and indexed {len(documents)} documents in FAISS at '{faiss_index_path}'"
+    )
+
+    return vectorstore
+
+
 def ingest_docs_from_url(
     url: str,
-):
+) -> FAISS:
     # 1. Load the documents from the URL
     raw_documents = custom_firecrawl_loader(url=url)
 
     # 2. Ingest
-    ingest_docs(
+    return ingest_docs_faiss(
         raw_documents=raw_documents,
-        pine_cone_config={
-            "index_name": settings.config.crawl_index_name,
-        },
     )
 
 

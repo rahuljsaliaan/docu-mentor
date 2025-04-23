@@ -59,7 +59,6 @@ def custom_firecrawl_loader(
         scrape_options=ScrapeOptions(
             formats=["markdown"], onlyMainContent=only_main_content
         ),
-        poll_interval=30,
     )
 
     # Poll for the crawl job to complete
@@ -73,7 +72,12 @@ def custom_firecrawl_loader(
     for page in data:
         page.links
         content = page.markdown
-        metadata = page.metadata
+        metadata = {
+            "source": page.url or url,
+            "title": page.title or "",
+            "domain": get_main_doc_name_from_url(page.url or ""),
+            "links": page.links or [],
+        }
 
         documents.append(Document(page_content=content, metadata=metadata))
 

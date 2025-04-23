@@ -1,4 +1,5 @@
 from langchain import hub
+from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.chains.combine_documents.stuff import create_stuff_documents_chain
 from langchain.chains.retrieval import create_retrieval_chain
@@ -15,7 +16,11 @@ embeddings = OpenAIEmbeddings(
 )
 
 
-def run_llm(query: str, chat_history: ChatHistoryType) -> DocsRetrievalResponseDTO:
+def run_llm(
+    query: str,
+    chat_history: ChatHistoryType,
+    faiss_index: FAISS = None,
+) -> DocsRetrievalResponseDTO:
     docsearch_vector_store = PineconeVectorStore(
         pinecone_api_key=settings.api.pinecone_api_key,
         embedding=embeddings,
@@ -32,12 +37,19 @@ def run_llm(query: str, chat_history: ChatHistoryType) -> DocsRetrievalResponseD
         prompt=retrieval_qa_chat_prompt, llm=chat
     )
 
+    # Choose the retriever based on whether FAISS index is provided or not
+    retriever = (
+        faiss_index.as_retriever()
+        if faiss_index
+        else docsearch_vector_store.as_retriever()
+    )
+
     # Load the rephrase prompt from LangChain Hub and create a history-aware retriever
     rephrase_prompt = hub.pull(settings.url.rephrase_prompt_url)
     history_aware_retriever = create_history_aware_retriever(
         prompt=rephrase_prompt,
         llm=chat,
-        retriever=docsearch_vector_store.as_retriever(),
+        retriever=retriever,
     )
 
     # Create the retrieval chain using the history-aware retriever and stuff documents chain

@@ -32,6 +32,6 @@ class DocsRetrievalResponseDTO(BaseModel):
 
     @property
     def formatted_response(self) -> str:
-        sources = set(doc.metadata["source"] for doc in self.source_documents)
-        sources_string = self.create_sources_string(sources)
+        metadata = set(doc.metadata["source"] for doc in self.source_documents)
+        sources_string = self.create_sources_string(metadata)
         return f"{self.result} \n\n {sources_string}"
