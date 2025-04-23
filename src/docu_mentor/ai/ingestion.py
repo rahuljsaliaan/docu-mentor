@@ -1,3 +1,4 @@
+from pinecone import Pinecone
 from typing import List, Callable, Dict, Iterator, Any
 from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -5,8 +6,16 @@ from langchain_community.document_loaders import ReadTheDocsLoader
 from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 
+
 from docu_mentor.core import settings
 from docu_mentor.types.enums import OpenAIModelEnum
+from docu_mentor.utils import custom_firecrawl_loader
+
+
+# Create Pinecone client
+pinecone = Pinecone(
+    api_key=settings.api.pinecone_api_key,
+)
 
 
 # Create embeddings object
@@ -34,11 +43,11 @@ def batch_store_documents(
         updater(batch)
 
 
-def ingest_docs():
-    loader = ReadTheDocsLoader(path=settings.url.langchain_docs_path, encoding="utf-8")
-
-    raw_documents = loader.load()
-
+def ingest_docs(
+    raw_documents: List[Document],
+    pine_cone_config: Dict[str, Any],
+    documents_manipulator: Callable[[List[Document]], List[Document]] = None,
+) -> None:
     print(f"Loaded {len(raw_documents)} documents")
 
     text_splitter = RecursiveCharacterTextSplitter(
@@ -48,10 +57,7 @@ def ingest_docs():
 
     documents = text_splitter.split_documents(documents=raw_documents)
 
-    for doc in documents:
-        new_url: str = doc.metadata["source"]
-        new_url = new_url.replace("langchain-docs", "https://")
-        doc.metadata.update({"source": new_url})
+    documents_manipulator(documents) if documents_manipulator else None
 
     print(f"Going to add {len(documents)} documents to Pinecone")
 
@@ -61,12 +67,45 @@ def ingest_docs():
             pinecone_api_key=settings.api.pinecone_api_key,
             documents=documents,
             embedding=embeddings,
-            index_name=settings.config.index_name,
+            **pine_cone_config,
         ),
     )
 
     print("Stored and indexed documents successfully")
 
 
+def ingest_local_docs():
+    loader = ReadTheDocsLoader(path=settings.url.langchain_docs_path, encoding="utf-8")
+
+    raw_documents = loader.load()
+
+    ingest_docs(
+        raw_documents=raw_documents,
+        pine_cone_config={"index_name": settings.config.index_name},
+        documents_manipulator=lambda documents: [
+            doc.metadata.update(
+                {"source": doc.metadata["source"].replace("langchain-docs", "https://")}
+            )
+            or doc
+            for doc in documents
+        ],
+    )
+
+
+def ingest_docs_from_url(
+    url: str,
+):
+    # 1. Load the documents from the URL
+    raw_documents = custom_firecrawl_loader(url=url)
+
+    # 2. Ingest
+    ingest_docs(
+        raw_documents=raw_documents,
+        pine_cone_config={
+            "index_name": settings.config.crawl_index_name,
+        },
+    )
+
+
 if __name__ == "__main__":
-    ingest_docs()
+    ingest_docs_from_url("https://python.langchain.com/docs")

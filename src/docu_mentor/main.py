@@ -1,15 +1,26 @@
-from fastapi import FastAPI, status
-from fastapi.responses import JSONResponse
+import os
+import subprocess
 
-app = FastAPI()
+from docu_mentor.ui.helpers.session import init_session_state
+from docu_mentor.ui.setup import setup_url_input
+from docu_mentor.ui.chat import chat_interface
 
 
-@app.get("/")
-def read_root():
-    return JSONResponse(
-        status_code=status.HTTP_200_OK, content="Welcome to DocuMentor!"
-    )
+def main():
+    if not os.getenv("STREAMLIT_RUNNING", "false") == "true":
+        os.environ["STREAMLIT_RUNNING"] = "true"
+        subprocess.run(["streamlit", "run", os.path.abspath(__file__)])
+        return
+
+    # Initialize session state
+    init_session_state()
+
+    # Show setup URL input
+    setup_url_input()
+
+    # Show chat interface
+    chat_interface()
 
 
 if __name__ == "__main__":
-    app()
+    main()

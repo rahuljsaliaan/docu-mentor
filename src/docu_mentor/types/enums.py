@@ -6,9 +6,6 @@ class EnvironmentEnum(str, Enum):
     development = "development"
 
 
-from enum import Enum
-
-
 class OpenAIModelEnum(str, Enum):
     # Chat & Completion Models
     GPT_3_5_TURBO = "gpt-3.5-turbo"
@@ -27,3 +24,21 @@ class OpenAIModelEnum(str, Enum):
     TEXT_EMBEDDING_ADA_002 = "text-embedding-ada-002"
     TEXT_EMBEDDING_3_SMALL = "text-embedding-3-small"
     TEXT_EMBEDDING_3_LARGE = "text-embedding-3-large"
+
+
+class PineConeModelEnum(str, Enum):
+    MULTILINGUAL_E5_LARGE = "multilingual-e5-large"
+    LLAMA_TEXT_EMBED_V2 = "llama-text-embed-v2"
+    COHERE_RERANK_3_5 = "cohere-rerank-3.5"
+    PINECONE_SPARSE_ENGLISH_V0 = "pinecone-sparse-english-v0"
+
+
+class SessionStateEnum(str, Enum):
+    documentation_url = "documentation_url"
+    user_prompt_history = "user_prompt_history"
+    chat_answer_history = "chat_answer_history"
+    chat_history = "chat_history"
+
+
+class ComponentsKey(str, Enum):
+    url_input = "url_input"
