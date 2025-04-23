@@ -11,8 +11,8 @@ from docu_mentor.types.enums import SessionStateEnum, ComponentsKeyEnum
 def main():
     if not os.getenv("STREAMLIT_RUNNING", "false") == "true":
         os.environ["STREAMLIT_RUNNING"] = "true"
-        subprocess.run(["streamlit", "run", os.path.abspath(__file__)])
-        return
+        subprocess.run(["streamlit", "run", os.path.abspath(__file__), "--server.port", "8000"])
+
 
     if SessionStateEnum.documentation_url in st.session_state:
         chat_interface()
