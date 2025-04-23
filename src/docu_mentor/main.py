@@ -14,6 +14,12 @@ def main():
         subprocess.run(["streamlit", "run", os.path.abspath(__file__), "--server.port", "8000"])
 
 
+    st.set_page_config(
+        page_title="DocuMentor – AI-Powered Documentation Assistant", 
+        page_icon="static/favicon.png",
+        initial_sidebar_state="collapsed"
+    )
+
     if SessionStateEnum.documentation_url in st.session_state:
         chat_interface()
     else:
