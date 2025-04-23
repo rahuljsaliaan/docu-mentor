@@ -6,7 +6,7 @@ from docu_mentor.types.enums import EnvironmentEnum
 
 def run():
     # Set the app based on the environment
-    if settings.environment == EnvironmentEnum.development:
+    if settings.config.environment == EnvironmentEnum.development:
         reload = True
         app_dir = "src"
         host = "127.0.0.1"
