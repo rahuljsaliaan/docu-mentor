@@ -53,14 +53,14 @@ class ProjectConfig(BaseSettings):
 class EmbeddingSettings(BaseSettings):
     """Configuration for document chunking and batch processing by model."""
 
-    settings_config: EmbeddingSettingsDict = Field(
-        default={
-            [OpenAIModelEnum.TEXT_EMBEDDING_3_SMALL.value]: {
+    settings_config: Dict[OpenAIModelEnum, EmbeddingSettingsDict] = Field(
+        default_factory=lambda: {
+            OpenAIModelEnum.TEXT_EMBEDDING_3_SMALL.value: {
                 "chunk_size": 500,
                 "chunk_overlap": 50,
                 "batch_size": 1000,
             },
-            [OpenAIModelEnum.TEXT_EMBEDDING_ADA_002.value]: {
+            OpenAIModelEnum.TEXT_EMBEDDING_ADA_002.value: {
                 "chunk_size": 800,
                 "chunk_overlap": 100,
                 "batch_size": 500,
@@ -82,10 +82,10 @@ class Settings(BaseSettings):
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
 
-    api = APIKeySettings()
-    url = URLSettings()
-    config = ProjectConfig()
-    embedding = EmbeddingSettings()
+    api: APIKeySettings = APIKeySettings()
+    url: URLSettings = URLSettings()
+    config: ProjectConfig = ProjectConfig()
+    embedding: EmbeddingSettings = EmbeddingSettings()
 
 
 settings = Settings()
